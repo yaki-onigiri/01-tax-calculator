@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>消費税計算ツール vol.3</title>
+    
+</head>
+
+
+
+<body>
+    <div class="card">
+
+        <h2>消費税計算ツール</h2>
+
+        <input type="number" id="price" min="0" placeholder="金額を入力">
+        <select id="mode">
+            <option value="exclusive">税抜 → 税込</option>
+            <option value="inclusive">税込 → 税抜</option>
+        </select>
+
+        <select id ="taxRate"></select>
+        <select id="rounding">
+            <option value="floor">切り捨て</option>
+            <option value="round">四捨五入</option>
+            <option value="ceil">切り上げ</option>
+        </select>
+
+        <button id="calcBtn">計算</button>
+
+        <div id="result" class="result-card"></div>
+        <div id="error" class="error"></div>
+
+    </div>
+
+    <script src="js/app.js"></script>
+    
+</body>
+</html>
+
+<!-- deploy test -->
