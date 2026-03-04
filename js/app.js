@@ -59,6 +59,14 @@ class TaxCalculator {
         return null;
     }
 
+    getInputValues(){
+        return {
+            price: Number(this.priceInput.value),
+            taxRate: Number(this.taxSelect.value) / 100,
+            mode: this.modeSelect.value
+        };
+    }
+
     applyRounding(value){
         const mode = this.roundingSelect.value;
 
@@ -72,12 +80,13 @@ class TaxCalculator {
     }
 
     calculate(){
-        const price = Number(this.priceInput.value);
-        const taxRate = Number(this.taxSelect.value) / 100;
-        const mode = this.modeSelect.value;
-
         this.result.textContent = "";
         this.error.textContent = "";
+
+        const inputDate = this.getInputValues();
+        const price = inputDate.price;
+        const taxRate = inputDate.taxRate;
+        const mode = inputDate.mode;
 
         const errorMessage = this.validate(price);
         if(errorMessage){
