@@ -53,6 +53,18 @@ class TaxCalculator {
         this.roundingSelect.addEventListener("change", () => {
             this.calculate();
         });
+
+        this.history.addEventListener("click", (e) => {
+            const li =e.target;
+
+            if(li.tagName !=="LI") return;
+
+            this.priceInput.value = li.dataset.price;
+            this.modeSelect.value = li.dataset.mode;
+            this.taxSelect.value = li.dataset.taxrate * 100;
+
+            this.calculate();
+        });
     }
 
     validate(price){
@@ -155,6 +167,10 @@ class TaxCalculator {
 
     addHistory(price, taxRate, mode, tax, total){
         const li =document.createElement("li");
+
+        li.dataset.price = price;
+        li.dataset.mode = mode;
+        li.dataset.taxrate = taxRate;
 
         if(mode === "exclusive"){
             li.textContent =
