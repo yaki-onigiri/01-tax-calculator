@@ -1,11 +1,12 @@
 class TaxCalculator {
-    constructor(priceInput, taxSelect, modeSelect, roundingSelect, result, error){
+    constructor(priceInput, taxSelect, modeSelect, roundingSelect, result, error, history){
         this.priceInput = priceInput;
         this.taxSelect = taxSelect;
         this.modeSelect = modeSelect;
         this.roundingSelect = roundingSelect;
         this.result = result;
         this.error = error;
+        this.history = history;
 
         this.initTaxRaters();
         this.init();
@@ -26,8 +27,16 @@ class TaxCalculator {
     }
 
     init(){
+        const savedHistory = localStorage.getItem("taxHistory");
+        if(savedHistory){
+            this.history.innerHTML = savedHistory;
+        }
+
         document.getElementById("calcBtn")
             .addEventListener("click", () => this.calculate());
+
+        document.getElementById("resetBtn")
+            .addEventListener("click", () => this.reset());
 
         this.priceInput.addEventListener("input", () => {
             this.calculate();
@@ -83,10 +92,10 @@ class TaxCalculator {
         this.result.textContent = "";
         this.error.textContent = "";
 
-        const inputDate = this.getInputValues();
-        const price = inputDate.price;
-        const taxRate = inputDate.taxRate;
-        const mode = inputDate.mode;
+        const inputData = this.getInputValues();
+        const price = inputData.price;
+        const taxRate = inputData.taxRate;
+        const mode = inputData.mode;
 
         const errorMessage = this.validate(price);
         if(errorMessage){
@@ -128,6 +137,42 @@ class TaxCalculator {
                 税抜価格：${basePrice.toLocaleString()}円
             `;
         }
+
+        this.addHistory(price, taxRate, mode, tax, total);
+    }
+
+    reset(){
+        this.priceInput.value = "";
+        this.taxSelect.selectedIndex = 0;
+        this.modeSelect.selectedIndex = 0;
+        this.roundingSelect.selectedIndex = 0;
+
+        this.result.textContent = "";
+        this.error.textContent = "";
+
+        this.priceInput.focus();
+    }
+
+    addHistory(price, taxRate, mode, tax, total){
+        const li =document.createElement("li");
+
+        if(mode === "exclusive"){
+            li.textContent =
+            `${price.toLocaleString()}円 → ${total.toLocaleString()}円 (税抜→税込)`;
+        }else{
+            const basePrice = total - tax;
+
+            li.textContent = 
+            `${price.toLocaleString()}円 → ${basePrice.toLocaleString()}円 (税込→税抜)`;
+        }
+
+        this.history.prepend(li);
+
+        localStorage.setItem("taxHistory", this.history.innerHTML);
+
+        if (this.history.children.length > 10) {
+            this.history.removeChild(this.history.lastChild);
+        }
     }
 }
 
@@ -137,5 +182,6 @@ new TaxCalculator(
     document.getElementById("mode"),
     document.getElementById("rounding"),
     document.getElementById("result"),
-    document.getElementById("error")
+    document.getElementById("error"),
+    document.getElementById("history")
 );
