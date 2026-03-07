@@ -33,13 +33,22 @@ class TaxCalculator {
         }
 
         document.getElementById("calcBtn")
-            .addEventListener("click", () => this.calculate());
+            .addEventListener("click", () => this.calculate(true));
 
         document.getElementById("resetBtn")
             .addEventListener("click", () => this.reset());
 
-        this.priceInput.addEventListener("input", () => {
-            this.calculate();
+        this.priceInput.addEventListener("input", (e) => {
+
+            let value = e.target.value.replace(/,/g,"");
+
+            if(value === "")return;
+
+            if(!isNaN(value)){
+                e.target.value = Number(value).toLocaleString();
+            }
+
+            this.calculate(false);
         });
 
         this.taxSelect.addEventListener("change", () => {
@@ -65,6 +74,9 @@ class TaxCalculator {
 
             this.calculate();
         });
+
+        document.getElementById("clearHistory")
+            .addEventListener("click", () => this.clearHistory());
     }
 
     validate(price){
@@ -82,7 +94,7 @@ class TaxCalculator {
 
     getInputValues(){
         return {
-            price: Number(this.priceInput.value),
+            price: Number(this.priceInput.value.replace(/,/g,"")),
             taxRate: Number(this.taxSelect.value) / 100,
             mode: this.modeSelect.value
         };
@@ -100,7 +112,7 @@ class TaxCalculator {
         }
     }
 
-    calculate(){
+    calculate(addHistory = false){
         this.result.textContent = "";
         this.error.textContent = "";
 
@@ -150,7 +162,9 @@ class TaxCalculator {
             `;
         }
 
-        this.addHistory(price, taxRate, mode, tax, total);
+        if(addHistory){
+            this.addHistory(price, taxRate, mode, tax, total);
+        }
     }
 
     reset(){
@@ -163,6 +177,15 @@ class TaxCalculator {
         this.error.textContent = "";
 
         this.priceInput.focus();
+    }
+
+    clearHistory(){
+        if(!confirm("履歴をすべて削除しますか？")){
+            return;
+        }
+
+        this.history.innerHTML = "";
+        localStorage.removeItem("taxHistory");
     }
 
     addHistory(price, taxRate, mode, tax, total){
@@ -184,11 +207,11 @@ class TaxCalculator {
 
         this.history.prepend(li);
 
-        localStorage.setItem("taxHistory", this.history.innerHTML);
-
         if (this.history.children.length > 10) {
             this.history.removeChild(this.history.lastChild);
         }
+
+        localStorage.setItem("taxHistory", this.history.innerHTML);
     }
 }
 
