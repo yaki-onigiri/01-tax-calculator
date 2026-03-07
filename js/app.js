@@ -38,6 +38,12 @@ class TaxCalculator {
         document.getElementById("resetBtn")
             .addEventListener("click", () => this.reset());
 
+        this.priceInput.addEventListener("keydown", (e) => {
+            if(e.key === "Enter"){
+                this.calculate(true);
+            }
+        });
+
         this.priceInput.addEventListener("input", (e) => {
 
             let value = e.target.value.replace(/,/g,"");
